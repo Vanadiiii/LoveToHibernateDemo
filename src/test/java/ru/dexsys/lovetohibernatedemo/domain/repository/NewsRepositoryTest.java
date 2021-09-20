@@ -3,11 +3,13 @@ package ru.dexsys.lovetohibernatedemo.domain.repository;
 import lombok.extern.slf4j.Slf4j;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 import ru.dexsys.lovetohibernatedemo.domain.entity.Division;
 import ru.dexsys.lovetohibernatedemo.domain.entity.File;
 import ru.dexsys.lovetohibernatedemo.domain.entity.News;
@@ -20,6 +22,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 @DataJpaTest
@@ -34,6 +38,8 @@ class NewsRepositoryTest {
     @Autowired
     private FileRepository fileRepository;
 
+    private News news;
+
     private final EasyRandom random = new EasyRandom(
             new EasyRandomParameters()
                     .seed(System.nanoTime())
@@ -43,21 +49,27 @@ class NewsRepositoryTest {
                     .randomizationDepth(2)
     );
 
+    @BeforeEach
+    @Transactional
+    void init() {
+        create(5 + random.nextInt(5));
+        news = create();
+    }
+
     @Test
     void test01() {
-        News news = create();
-
         log.error(news.getId().toString());
 
-        newsRepository.findAllByFilter(
-                        NewsFilter
-                                .builder()
-                                .messageFragment(news.getMessage().substring(0, 2))
-                                .build()
-                )
-                .stream()
-                .map(News::toString)
-                .forEach(log::info);
+        List<News> foundNews = newsRepository.findAllByFilter(
+                NewsFilter
+                        .builder()
+                        .messageFragment(news.getMessage().substring(0, 2))
+                        .build()
+        );
+
+        assertNotNull(foundNews);
+        assertTrue(foundNews.size() >= 1);
+        assertTrue(foundNews.contains(news));
     }
 
     private News create() {
@@ -76,7 +88,7 @@ class NewsRepositoryTest {
         someNews.setReaders(readers);
         someNews.setDivisions(divisions);
 
-        return newsRepository.saveAndFlush(someNews);
+        return newsRepository.save(someNews);
     }
 
     private Collection<News> create(int count) {
