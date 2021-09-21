@@ -9,6 +9,7 @@ import ru.dexsys.lovetohibernatedemo.domain.entity.enums.FileExtension;
 import ru.dexsys.lovetohibernatedemo.domain.entity.enums.NewsType;
 import ru.dexsys.lovetohibernatedemo.domain.entity.enums.ReaderRole;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -24,4 +25,6 @@ public class NewsFilter {
     private List<DivisionType> divisionTypes;
     private List<FileExtension> fileExtensions;
     private NewsType newsType;
+    @NotNull
+    private String readerName;
 }

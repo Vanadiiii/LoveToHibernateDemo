@@ -1,6 +1,9 @@
 package ru.dexsys.lovetohibernatedemo.domain.entity;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.util.CollectionUtils;
@@ -8,7 +11,10 @@ import ru.dexsys.lovetohibernatedemo.domain.entity.enums.NewsType;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -27,6 +33,8 @@ public class News {
     private NewsType type;
 
     private String message;
+
+    private boolean personal;
 
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL)
     private Set<File> files;

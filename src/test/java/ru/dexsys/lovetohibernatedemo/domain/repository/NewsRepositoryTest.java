@@ -55,7 +55,7 @@ class NewsRepositoryTest {
     }
 
     @Test
-    void test01() {
+    void notTest() {
         System.out.println("=".repeat(100));
 
         newsRepository.flush();
@@ -67,6 +67,7 @@ class NewsRepositoryTest {
                         .fileExtensions(news.getFiles().stream().map(File::getExtension).collect(Collectors.toList()))
                         .divisionTypes(news.getDivisions().stream().map(Division::getType).collect(Collectors.toList()))
                         .readerRoles(news.getReaders().stream().map(Reader::getRole).collect(Collectors.toList()))
+                        .readerName(news.getReaders().stream().findFirst().orElseThrow().getName())
                         .build()
         );
 

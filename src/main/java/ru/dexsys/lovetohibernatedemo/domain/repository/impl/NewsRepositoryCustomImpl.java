@@ -23,21 +23,33 @@ public class NewsRepositoryCustomImpl implements NewsRepositoryCustom {
     @SuppressWarnings("unchecked")
     @Transactional
     public List<News> findAllByFilter(NewsFilter filter) {
-        String request =
+        String request = "" +
                 "select distinct n " +
-                        " from News n " +
-                        " left join n.readers r " +
-                        " left join n.divisions d " +
-                        " left join n.files f " +
-                        " where (1=1) " +
-                        (isNull(filter.getFrom()) ? "" : " and n.createDate >= :from ") +
-                        (isNull(filter.getTo()) ? "" : " and n.createDate <= :to ") +
-                        (isEmpty(filter.getFileExtensions()) ? "" : " and f.extension in :extensions ") +
-                        (isEmpty(filter.getDivisionTypes()) ? "" : " and d.type in :types ") +
-                        (isEmpty(filter.getReaderRoles()) ? "" : " and r.role in :roles ") +
-                        (isNull(filter.getMessageFragment()) ? "" : "and UPPER(n.message) like ('%' || UPPER(:text) || '%') ");
+                "from News n " +
+                "  left join n.readers r  " +
+                "  left join n.divisions d " +
+                "  left join n.files f " +
+                "  where (1=1) " +
+                (isNull(filter.getFrom()) ? ""
+                        : " and n.createDate >= :from ") +
+                (isNull(filter.getTo()) ? ""
+                        : " and n.createDate <= :to ") +
+                (" and (" +
+                        "(n.personal = TRUE and r.name = :name) " +
+                        " or (" +
+                        (isEmpty(filter.getDivisionTypes()) ? " (1!=1) " : " (d.type in :types) ") +
+                        " or " +
+                        (isEmpty(filter.getReaderRoles()) ? " (1!=1) " : " (r.role in :roles) ") +
+                        "))"
+                ) +
+                (isEmpty(filter.getFileExtensions()) ? ""
+                        : " and f.extension in :extensions ") +
+                (isNull(filter.getMessageFragment()) ? ""
+                        : "and UPPER(n.message) like ('%' || UPPER(:text) || '%') ");
 
         Query query = manager.createQuery(request);
+
+        query.setParameter("name", filter.getReaderName());
 
         if (!isNull(filter.getFrom())) {
             query.setParameter("from", filter.getFrom());
