@@ -1,6 +1,7 @@
 package ru.dexsys.lovetohibernatedemo.domain.repository.impl;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.dexsys.lovetohibernatedemo.domain.entity.News;
 import ru.dexsys.lovetohibernatedemo.domain.repository.NewsRepositoryCustom;
 import ru.dexsys.lovetohibernatedemo.domain.repository.filter.NewsFilter;
@@ -20,16 +21,20 @@ public class NewsRepositoryCustomImpl implements NewsRepositoryCustom {
 
     @Override
     @SuppressWarnings("unchecked")
+    @Transactional
     public List<News> findAllByFilter(NewsFilter filter) {
         String request =
                 "select distinct n " +
-                        "from News n " +
-                        "left join n.readers r " +
-                        "left join n.divisions d " +
-                        "left join n.files f " +
-                        "where (1=1) " +
-                        (isNull(filter.getFrom()) ? "" : "and n.createDate >= :from ") +
-                        (isNull(filter.getTo()) ? "" : "and n.createDate <= :to ") +
+                        " from News n " +
+                        " left join n.readers r " +
+                        " left join n.divisions d " +
+                        " left join n.files f " +
+                        " where (1=1) " +
+                        (isNull(filter.getFrom()) ? "" : " and n.createDate >= :from ") +
+                        (isNull(filter.getTo()) ? "" : " and n.createDate <= :to ") +
+                        (isEmpty(filter.getFileExtensions()) ? "" : " and f.extension in :extensions ") +
+                        (isEmpty(filter.getDivisionTypes()) ? "" : " and d.type in :types ") +
+                        (isEmpty(filter.getReaderRoles()) ? "" : " and r.role in :roles ") +
                         (isNull(filter.getMessageFragment()) ? "" : "and UPPER(n.message) like ('%' || UPPER(:text) || '%') ");
 
         Query query = manager.createQuery(request);
@@ -42,6 +47,15 @@ public class NewsRepositoryCustomImpl implements NewsRepositoryCustom {
         }
         if (!isNull(filter.getMessageFragment())) {
             query.setParameter("text", filter.getMessageFragment());
+        }
+        if (!isEmpty(filter.getFileExtensions())) {
+            query.setParameter("extensions", filter.getFileExtensions());
+        }
+        if (!isEmpty(filter.getDivisionTypes())) {
+            query.setParameter("types", filter.getDivisionTypes());
+        }
+        if (!isEmpty(filter.getReaderRoles())) {
+            query.setParameter("roles", filter.getReaderRoles());
         }
 
         return query.getResultList();

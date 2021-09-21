@@ -25,6 +25,9 @@ public class File {
     @ToString.Exclude
     private News news;
 
+    @Enumerated(EnumType.STRING)
+    private FileExtension extension;
+
     private String link;
 
 //    @Override

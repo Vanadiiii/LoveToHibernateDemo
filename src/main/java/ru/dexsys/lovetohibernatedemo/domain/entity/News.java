@@ -28,15 +28,12 @@ public class News {
 
     private String message;
 
-    @ToString.Exclude
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL)
     private Set<File> files;
 
-    @ToString.Exclude
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL)
     private Set<Reader> readers;
 
-    @ToString.Exclude
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL)
     private Set<Division> divisions;
 
