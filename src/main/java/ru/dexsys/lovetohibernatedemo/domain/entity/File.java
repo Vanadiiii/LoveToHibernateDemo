@@ -4,10 +4,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.GenericGenerator;
 import ru.dexsys.lovetohibernatedemo.domain.entity.enums.FileExtension;
 
 import javax.persistence.*;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -31,16 +33,16 @@ public class File {
 
     private String link;
 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-//        File file = (File) o;
-//        return Objects.equals(id, file.id);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return 31;
-//    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        File file = (File) o;
+        return Objects.equals(id, file.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return 31;
+    }
 }

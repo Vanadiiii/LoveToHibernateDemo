@@ -11,9 +11,9 @@ import ru.dexsys.lovetohibernatedemo.domain.entity.enums.NewsType;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -36,14 +36,17 @@ public class News {
 
     private boolean personal;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL)
-    private Set<File> files;
+    private List<File> files = new ArrayList<>();
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL)
-    private Set<Reader> readers;
+    private List<Reader> readers = new ArrayList<>();
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL)
-    private Set<Division> divisions;
+    private List<Division> divisions = new ArrayList<>();
 
     public void setFiles(List<File> files) {
         if (!CollectionUtils.isEmpty(files)) {
