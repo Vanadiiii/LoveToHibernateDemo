@@ -1,5 +1,6 @@
 package ru.dexsys.lovetohibernatedemo.domain.repository.impl;
 
+import org.hibernate.jpa.QueryHints;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.dexsys.lovetohibernatedemo.domain.entity.News;
@@ -26,9 +27,9 @@ public class NewsRepositoryCustomImpl implements NewsRepositoryCustom {
         String request = "" +
                 "select distinct n " +
                 "from News n " +
-                "  left join n.readers r  " +
-                "  left join n.divisions d " +
-                "  left join n.files f " +
+                "  left join fetch n.readers r  " +
+                "  left join fetch n.divisions d " +
+                "  left join fetch n.files f " +
                 "  where (1=1) " +
                 (isNull(filter.getFrom()) ? ""
                         : " and n.createDate >= :from ") +
@@ -47,9 +48,9 @@ public class NewsRepositoryCustomImpl implements NewsRepositoryCustom {
                 (isNull(filter.getMessageFragment()) ? ""
                         : "and UPPER(n.message) like ('%' || UPPER(:text) || '%') ");
 
-        Query query = manager.createQuery(request);
-
-        query.setParameter("name", filter.getReaderName());
+        Query query = manager.createQuery(request)
+                .setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false)
+                .setParameter("name", filter.getReaderName());
 
         if (!isNull(filter.getFrom())) {
             query.setParameter("from", filter.getFrom());

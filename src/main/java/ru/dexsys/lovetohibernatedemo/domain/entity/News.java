@@ -11,10 +11,7 @@ import ru.dexsys.lovetohibernatedemo.domain.entity.enums.NewsType;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Getter
@@ -36,12 +33,15 @@ public class News {
 
     private boolean personal;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL)
     private Set<File> files;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL)
     private Set<Reader> readers;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL)
     private Set<Division> divisions;
 
